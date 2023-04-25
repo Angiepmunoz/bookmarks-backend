@@ -9,6 +9,34 @@ const getAllBookmarks = async () => {
   }
 };
 
+const getBookmark = async (id) => {
+  console.log(id);
+  try {
+    const bookmark = await db.any(`SELECT * FROM bookmarks WHERE id=${id}`);
+    return bookmark;
+  } catch (error) {
+    return { error: error };
+  }
+};
+
+const createBookmark = async (bookmark) => {
+  try {
+    const newBookmark = await db.one(
+      `INSERT INTO
+        bookmarks(name,  url, is_favorite, category)
+       VALUES
+        ($1, $2, $3, $4)
+       RETURNING *;`,
+      [bookmark.name, bookmark.url, bookmark.is_favorite, bookmark.category]
+    );
+    return newBookmark;
+  } catch (error) {
+    return { error: error };
+  }
+};
+
 module.exports = {
   getAllBookmarks,
+  getBookmark,
+  createBookmark,
 };

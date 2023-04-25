@@ -1,6 +1,10 @@
 const express = require("express");
 const bookmarks = express.Router();
-const { getAllBookmarks } = require("../queries/bookmarks.js");
+const {
+  getAllBookmarks,
+  getBookmark,
+  createBookmark,
+} = require("../queries/bookmarks.js");
 
 // index
 bookmarks.get("/", async (req, res) => {
@@ -12,5 +16,50 @@ bookmarks.get("/", async (req, res) => {
     res.status(500).json({ error: "server error" });
   }
 });
+
+// show
+bookmarks.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const bookmark = await getBookmark(id);
+  console.log(bookmark);
+  if (!bookmark.error) {
+    res.status(200).json(bookmark);
+  } else if (bookmark.error.code === 0) {
+    res.status(404).json({ error: "bookmark not found" });
+  } else {
+    res.status(500).json({ error: "server error" });
+  }
+});
+
+// create
+bookmarks.post(
+  "/",
+  (req, res, next) => {
+    // validate req.body
+    const { name, url, is_favorite, category } = req.body;
+    if (!name || !url || !is_favorite || !category) {
+      return res
+        .status(422)
+        .json({ error: "body requires name, url, is_favorite, and category" });
+    }
+
+    next();
+  },
+  async (req, res) => {
+    const { name, url, is_favorite, category } = req.body;
+
+    const newBookmark = await createBookmark({
+      name,
+      url,
+      is_favorite,
+      category,
+    });
+    if (!newBookmark.error) {
+      res.status(201).json(newBookmark);
+    } else {
+      res.status(500).json({ error: "server error" });
+    }
+  }
+);
 
 module.exports = bookmarks;
