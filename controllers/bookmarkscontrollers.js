@@ -7,6 +7,7 @@ const {
   deleteBookmark,
   updateBookmark,
 } = require("../queries/bookmarks.js");
+const {validateURL} = require("../validations/validations.js")
 
 // index
 bookmarks.get("/", async (req, res) => {
@@ -35,7 +36,7 @@ bookmarks.get("/:id", async (req, res) => {
 
 // create
 bookmarks.post(
-  "/",
+  "/", validateURL,
   (req, res, next) => {
     // validate req.body
     const { name, url, is_favorite, category } = req.body;
@@ -65,7 +66,7 @@ bookmarks.post(
 );
 
 // update bookmark
-bookmarks.put("/:id", async (req, res) => {
+bookmarks.put("/:id", validateURL, async (req, res) => {
   const { id } = req.params;
   const bookmark = req.body;
   const updatedBookmark = await updateBookmark(id, bookmark);
