@@ -4,6 +4,7 @@ const {
   getAllBookmarks,
   getBookmark,
   createBookmark,
+  deleteBookmark,
 } = require("../queries/bookmarks.js");
 
 // index
@@ -61,5 +62,16 @@ bookmarks.post(
     }
   }
 );
+
+bookmarks.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const deletedBookmark = await deleteBookmark(id);
+  console.log(deletedBookmark);
+  if (deletedBookmark.id) {
+    res.status(201).json(deletedBookmark);
+  } else {
+    res.status(404).json("Bookmark not found");
+  }
+});
 
 module.exports = bookmarks;
