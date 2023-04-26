@@ -5,6 +5,7 @@ const {
   getBookmark,
   createBookmark,
   deleteBookmark,
+  updateBookmark,
 } = require("../queries/bookmarks.js");
 
 // index
@@ -62,6 +63,14 @@ bookmarks.post(
     }
   }
 );
+
+// update bookmark
+bookmarks.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const bookmark = req.body;
+  const updatedBookmark = await updateBookmark(id, bookmark);
+  res.status(200).json(updatedBookmark);
+});
 
 bookmarks.delete("/:id", async (req, res) => {
   const { id } = req.params;
