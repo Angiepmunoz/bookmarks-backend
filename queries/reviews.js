@@ -24,7 +24,7 @@ const createReview = async (review) => {
       `INSERT INTO
         reviews(bookmark_id, reviewer, title, content, rating)
        VALUES
-        ($1, $2, $3, $4)
+        ($1, $2, $3, $4, $5)
        RETURNING *;`,
       [
         review.bookmark_id,

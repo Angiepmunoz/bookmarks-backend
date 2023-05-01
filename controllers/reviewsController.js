@@ -33,13 +33,14 @@ reviews.get("/:id", async (req, res) => {
 
 // create
 reviews.post("/", async (req, res) => {
-  const { name, url, is_favorite, category } = req.body;
+  const { bookmark_id, reviewer, title, content, rating } = req.body;
 
   const newReview = await createReview({
-    name,
-    url,
-    is_favorite,
-    category,
+    bookmark_id,
+    reviewer,
+    title,
+    content,
+    rating,
   });
   if (!newReview.error) {
     res.status(201).json(newReview);
@@ -50,9 +51,9 @@ reviews.post("/", async (req, res) => {
 
 // update Review
 reviews.put("/:id", async (req, res) => {
-  const { review_id } = req.params;
+  const { id } = req.params;
   const review = req.body;
-  const updatedReview = await updateReview(review_id, review);
+  const updatedReview = await updateReview(id, review);
   res.status(200).json(updatedReview);
 });
 
