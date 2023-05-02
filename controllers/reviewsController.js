@@ -1,5 +1,6 @@
 const express = require("express");
 const reviews = express.Router();
+const validateReview = require("../validations/validateReview.js");
 const {
   getAllReviews,
   getReview,
@@ -10,60 +11,55 @@ const {
 
 // index
 reviews.get("/", async (req, res) => {
-  const allReviews = await getAllReviews();
-  if (!allReviews.error) {
-    res.status(200).json(allReviews);
-  } else {
+  const { error, result } = await getAllReviews();
+  if (error) {
     res.status(500).json({ error: "server error" });
+  } else {
+    res.status(200).json(result);
   }
 });
 
 // show
 reviews.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const review = await getReview(id);
-  if (!review.error) {
-    res.status(200).json(review);
-  } else if (review.error.code === 0) {
+  const { error, result } = await getReview(id);
+  if (error?.code === 0) {
     res.status(404).json({ error: "Review not found" });
-  } else {
+  } else if (error) {
     res.status(500).json({ error: "server error" });
+  } else {
+    res.status(200).json(result);
   }
 });
 
 // create
-reviews.post("/", async (req, res) => {
-  const { bookmark_id, reviewer, title, content, rating } = req.body;
-
-  const newReview = await createReview({
-    bookmark_id,
-    reviewer,
-    title,
-    content,
-    rating,
-  });
-  if (!newReview.error) {
-    res.status(201).json(newReview);
-  } else {
+reviews.post("/", validateReview, async (req, res) => {
+  const { error, result } = await createReview(req.body);
+  if (error) {
     res.status(500).json({ error: "server error" });
+  } else {
+    res.status(201).json(result);
   }
 });
 
 // update Review
-reviews.put("/:id", async (req, res) => {
+reviews.put("/:id", validateReview, async (req, res) => {
   const { id } = req.params;
-  const review = req.body;
-  const updatedReview = await updateReview(id, review);
-  res.status(200).json(updatedReview);
+  const { error, result } = await updateReview(id, req.body);
+  if (error) {
+    res.status(500).json({ error: "server error" });
+  } else {
+    res.status(200).json(result);
+  }
 });
 
 reviews.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  const deletedReview = await deleteReview(id);
-  if (deletedReview.id) {
-    res.status(201).json(deletedReview);
-  } else {
+  const { error, result } = await deleteReview(id);
+  if (error) {
     res.status(404).json("Review not found");
+  } else {
+    res.status(201).json(result);
   }
 });
 
