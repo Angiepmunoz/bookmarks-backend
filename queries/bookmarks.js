@@ -2,26 +2,25 @@ const db = require("../db/dbConfig.js");
 
 const getAllBookmarks = async () => {
   try {
-    const allBookmarks = await db.any("SELECT * FROM bookmarks");
-    return allBookmarks;
+    const result = await db.any("SELECT * FROM bookmarks");
+    return { result };
   } catch (error) {
-    return { error: error };
+    return { error };
   }
 };
 
 const getBookmark = async (id) => {
-  console.log(id);
   try {
-    const bookmark = await db.any(`SELECT * FROM bookmarks WHERE id=${id}`);
-    return bookmark;
+    const result = await db.any(`SELECT * FROM bookmarks WHERE id=${id}`);
+    return { result };
   } catch (error) {
-    return { error: error };
+    return { error };
   }
 };
 
 const createBookmark = async (bookmark) => {
   try {
-    const newBookmark = await db.one(
+    const result = await db.one(
       `INSERT INTO
         bookmarks(name,  url, is_favorite, category)
        VALUES
@@ -29,35 +28,33 @@ const createBookmark = async (bookmark) => {
        RETURNING *;`,
       [bookmark.name, bookmark.url, bookmark.is_favorite, bookmark.category]
     );
-    return newBookmark;
+    return { result };
   } catch (error) {
-    return { error: error };
+    return { error };
   }
 };
 
 const deleteBookmark = async (id) => {
-  //bookmarks/id
   try {
-    const deletedBookmark = await db.one(
+    const result = await db.one(
       "DELETE FROM bookmarks WHERE id=$1 RETURNING *",
       id
     );
-    return deletedBookmark;
-  } catch (e) {
-    return e;
+    return { result };
+  } catch (error) {
+    return { error };
   }
 };
 
 const updateBookmark = async (id, bookmark) => {
-  // bookmarks/id
   try {
-    const updatedBookmark = await db.one(
+    const result = await db.one(
       `UPDATE bookmarks SET name=$1, url=$2, category=$3, is_favorite=$4 WHERE id=$5 RETURNING *`,
       [bookmark.name, bookmark.url, bookmark.category, bookmark.is_favorite, id]
     );
-    return updatedBookmark;
-  } catch (e) {
-    return e;
+    return { result };
+  } catch (error) {
+    return { error };
   }
 };
 
