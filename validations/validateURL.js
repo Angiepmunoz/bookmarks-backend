@@ -11,6 +11,4 @@ const validateURL = (req, res, next) => {
   }
 };
 
-module.exports = {
-  validateURL,
-};
+module.exports = validateURL;
