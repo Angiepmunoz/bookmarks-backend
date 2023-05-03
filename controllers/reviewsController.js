@@ -1,8 +1,8 @@
 const express = require("express");
-const reviews = express.Router();
+const reviews = express.Router({ mergeParams: true });
 const validateReview = require("../validations/validateReview.js");
 const {
-  getAllReviews,
+  getAllReviewsByBookmark,
   getReview,
   createReview,
   deleteReview,
@@ -11,7 +11,8 @@ const {
 
 // index
 reviews.get("/", async (req, res) => {
-  const { error, result } = await getAllReviews();
+  const { bookmarkId } = req.params;
+  const { error, result } = await getAllReviewsByBookmark(bookmarkId);
   if (error) {
     res.status(500).json({ error: "server error" });
   } else {
@@ -20,9 +21,10 @@ reviews.get("/", async (req, res) => {
 });
 
 // show
-reviews.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { error, result } = await getReview(id);
+reviews.get("/:reviewId", async (req, res) => {
+  console.log(req.params);
+  const { reviewId } = req.params;
+  const { error, result } = await getReview(reviewId);
   if (error?.code === 0) {
     res.status(404).json({ error: "Review not found" });
   } else if (error) {
@@ -43,9 +45,9 @@ reviews.post("/", validateReview, async (req, res) => {
 });
 
 // update Review
-reviews.put("/:id", validateReview, async (req, res) => {
-  const { id } = req.params;
-  const { error, result } = await updateReview(id, req.body);
+reviews.put("/:reviewId", validateReview, async (req, res) => {
+  const { reviewId } = req.params;
+  const { error, result } = await updateReview(reviewId, req.body);
   if (error) {
     res.status(500).json({ error: "server error" });
   } else {
@@ -53,9 +55,9 @@ reviews.put("/:id", validateReview, async (req, res) => {
   }
 });
 
-reviews.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { error, result } = await deleteReview(id);
+reviews.delete("/:reviewId", async (req, res) => {
+  const { reviewId } = req.params;
+  const { error, result } = await deleteReview(reviewId);
   if (error) {
     res.status(404).json("Review not found");
   } else {

@@ -1,6 +1,7 @@
 const express = require("express");
 const bookmarks = express.Router();
 const validateBookmark = require("../validations/validateBookmark.js");
+const reviewsController = require("./reviewsController.js");
 const {
   getAllBookmarks,
   getBookmark,
@@ -8,6 +9,12 @@ const {
   deleteBookmark,
   updateBookmark,
 } = require("../queries/bookmarks.js");
+
+// What API endpoint should we use to request all reviews for a bookmark?
+
+// GET /bookmarks/2/reviews
+
+bookmarks.use("/:bookmarkId/reviews", reviewsController);
 
 // index
 bookmarks.get("/", async (req, res) => {
